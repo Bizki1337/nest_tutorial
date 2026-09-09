@@ -12,27 +12,44 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+rl.on('SIGINT', () => {
+  console.log('\n Выход');
+  rl.close();
+});
+
 console.log(`Загадано число в диапазоне от ${min} до ${max}`);
 
-rl.on('line', (input) => {
-  console.log('input', input);
-  if (isNaN(Number(input))) {
-    console.log('Введите число');
-    return;
-  }
+function ask() {
+  rl.question('', (input) => {
+    if (input.trim() === '' || isNaN(Number(input))) {
+      console.log('Введите число');
+      ask();
+      return;
+    }
 
-  const inputValue = Number(input);
+    const inputValue = Number(input);
 
-  if (inputValue < secretValue) {
-    console.log('Больше');
-  }
+    if (inputValue < min || inputValue > max) {
+      console.log(`Число должно быть в диапазоне от ${min} до ${max}`);
+      ask();
+      return;
+    }
 
-  if (inputValue > secretValue) {
-    console.log('Меньше');
-  }
+    if (inputValue < secretValue) {
+      console.log('Больше');
+      ask();
+      return;
+    }
 
-  if (inputValue === secretValue) {
+    if (inputValue > secretValue) {
+      console.log('Меньше');
+      ask();
+      return;
+    }
+
     console.log(`Отгадано число ${secretValue}!`);
     rl.close();
-  }
-});
+  });
+}
+
+ask();
